@@ -1,7 +1,8 @@
 import useDebounce from '@src/Hooks/useDebounce';
 import useFavoritesStore from '@src/Hooks/useFavoritesStore';
+import usePrevious from '@src/Hooks/usePrevious';
 import { fetchCharacters } from '@src/Services/ApiUtility';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useQuery } from 'react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -20,41 +21,57 @@ export interface CharacterData {
 export interface CharactersData {
     count: number;
     next: string | null;
-    previous: string;
+    previous: string | null;
     results: Array<CharacterData>;
 }
 
 const CharacterList: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [search, setSearch] = useState(searchParams.get('search') || '');
-    const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
-    // const [lastSearchValue, setLastSearchValue] = useState(''); // Track the last search value
-    // const [lastPage, setLastPage] = useState<number>(page); // Track the last page number
-
-    const debouncedSearch = useDebounce(search, 300);
     const { favorites, toggleFavorite } = useFavoritesStore();
 
-    // Update the URL and reset page when the debounced search value changes
-    useEffect(() => {
-        if (debouncedSearch.trim() === searchParams.get('search')) return;
-        setSearchParams({ search: debouncedSearch.trim(), page: '1' });
-        setPage(1);
-    }, [debouncedSearch, setSearchParams, searchParams]);
+    // Extract search and page from URL params
+    const search = searchParams.get('search') || '';
+    const page = Number(searchParams.get('page')) || 1;
 
-    // Fetch data if debounced search changes or the page number changes
-    const { data = {}, isLoading, error } = useQuery(
+    // Debounced search term to minimize API calls
+    const debouncedSearch = useDebounce(search, 1500);
+    const prevSearchVal = usePrevious(debouncedSearch);
+    const prevPageVal = usePrevious(page);
+
+    // Query to fetch character data
+    const { data, isFetching, isError } = useQuery(
         ['characters', debouncedSearch, page],
         () => {
-            // setLastSearchValue(debouncedSearch.trim());
-            // setLastPage(page);
-            return fetchCharacters(debouncedSearch, page);
+            console.log(prevSearchVal, " :: ", debouncedSearch);
+            return fetchCharacters(debouncedSearch, page)
         },
-        // {
-        //     enabled: debouncedSearch.trim() !== lastSearchValue || page !== lastPage || (lastSearchValue === '' && lastPage === page),
-        // }
+        {
+            keepPreviousData: true,
+            enabled: (page > 0 && prevSearchVal !== debouncedSearch) || (page != prevPageVal  && prevSearchVal == debouncedSearch),
+        }
     );
 
-    const { next = null, previous = null, results = [] }: CharactersData = data;
+    const { next = null, previous = null, results = [] }: CharactersData = data || {};
+
+    // Handle search input changes
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.trim();
+        console.log("🚀 ~ handleSearchChange ~ value:", value, " :: ", search)
+        if (value === search) return; // Prevent unnecessary API call
+        setSearchParams({ search: value, page: '1' }); // Reset page to 1 on search change
+    };
+
+    // Handle page navigation
+    const handlePageChange = (newPage: number) => {
+        setSearchParams({ search, page: String(newPage) });
+    };
+
+    // Ensure API gets called on the first load with empty search
+    // useEffect(() => {
+    //     if (!searchParams.get('search')) {
+    //         setSearchParams({ search: '', page: '1' });
+    //     }
+    // }, [searchParams, setSearchParams]);
 
     return (
         <div>
@@ -63,14 +80,14 @@ const CharacterList: React.FC = () => {
                 type="text"
                 placeholder="Search characters"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={handleSearchChange}
             />
-            {isLoading && <div>Loading...</div>}
-            {error && <div>Error fetching characters</div>}
-            {!isLoading && !error && (
+            {isFetching && <div>Loading...</div>}
+            {isError && <div>Error fetching characters</div>}
+            {!isFetching && !isError && (
                 <>
                     <ul>
-                        {results.map((char: CharacterData) => (
+                        {results.length > 0 && results.map((char: CharacterData) => (
                             <li key={char.name}>
                                 <Link to={`/details/${char.url.split('/')[5]}`}>
                                     {char.name} ({char.gender})
@@ -81,26 +98,25 @@ const CharacterList: React.FC = () => {
                             </li>
                         ))}
                     </ul>
-                    <button
-                        disabled={previous == null}
-                        onClick={() => {
-                            setPage(page - 1);
-                            setSearchParams({ search: debouncedSearch.trim(), page: `${page - 1}` });
-                        }}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        disabled={next == null}
-                        onClick={() => {
-                            setPage(page + 1);
-                            setSearchParams({ search: debouncedSearch.trim(), page: `${page + 1}` });
-                        }}
-                    >
-                        Next
-                    </button>
+                    {
+                        results.length < 1 && <div>No results found</div>
+                    }
                 </>
             )}
+            <div>
+                <button
+                    disabled={isFetching || !previous}
+                    onClick={() => handlePageChange(page - 1)}
+                >
+                    Previous
+                </button>
+                <button
+                    disabled={isFetching || !next}
+                    onClick={() => handlePageChange(page + 1)}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 };

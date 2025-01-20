@@ -32,3 +32,7 @@ export const fetchHomeworld = async (url: string): Promise<string> => {
     const data = await response.json();
     return data.name; // Assuming the API returns a `name` field for the planet
 };
+
+// export const api = {
+//     fetchCharacters: jest.fn()
+// };

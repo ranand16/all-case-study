@@ -10,10 +10,20 @@ const CharacterDetails: React.FC = () => {
 
     const { data, isLoading, error } = useQuery(['characterDetails', id], () => fetchCharacterDetails(id));
 
-    const isFavorite = useMemo(() => {
-        return data ? !!favorites[data.name] : false;
+    const {isFavorite, filmsExist, starshipsExist} = useMemo(() => {
+        return data ? {
+            isFavorite: Boolean(favorites[data.name]),
+            filmsExist: Boolean(data.films.length > 0),
+            starshipsExist: Boolean(data?.starships.length> 0)
+        } : {
+            isFavorite: false,
+            filmsExist: false,
+            starshipsExist: false
+        };
     }, [data, favorites]);
 
+        console.log("🚀 ~ const{isFavorite,filmsExist,starshipsExist}=useMemo ~ starshipsExist:", starshipsExist)
+        console.log("🚀 ~ const{isFavorite,filmsExist,starshipsExist}=useMemo ~ filmsExist:", filmsExist)
     const handleToggleFavorite = useCallback(() => {
         if (data) {
             toggleFavorite({
@@ -43,17 +53,19 @@ const CharacterDetails: React.FC = () => {
 
             <h2>Films</h2>
             <ul>
-                {data.films.map((film: string, index: number) => (
+                {filmsExist && data.films.map((film: string, index: number) => (
                     <li key={index}>{film}</li>
                 ))}
             </ul>
+            {!filmsExist && <div>Films does not exist</div>}
 
             <h2>Starships</h2>
             <ul>
-                {data.starships.map((ship: string, index: number) => (
+                {starshipsExist && data?.starships.map((ship: string, index: number) => (
                     <li key={index}>{ship}</li>
                 ))}
             </ul>
+            {!starshipsExist && <div>Starship does not exist</div>}
 
             {/* Add/Remove from Favorites Button */}
             <button onClick={handleToggleFavorite}>
