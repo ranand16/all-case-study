@@ -7,7 +7,6 @@ const Favourites: React.FC = () => {
     const { favorites, removeFavorite, resetFavorites } = useFavoritesStore();
     const [loading, setLoading] = useState(false);
 
-    // Memoize favorite characters and homeworld URLs
     const { favoriteCharacters, uniqueHomeworlds, homeworldData } = useMemo(() => {
         const characters = Object.values(favorites);
         const uniqueUrls = Array.from(
@@ -22,17 +21,15 @@ const Favourites: React.FC = () => {
         return { favoriteCharacters: characters, uniqueHomeworlds: uniqueUrls, homeworldData };
     }, [favorites]);
 
-    // Memoize homeworld fetching to prevent re-fetching already known homeworlds
     const fetchHomeworlds = useCallback(async () => {
         setLoading(true);
         try {
             const homeworldResponses = await Promise.allSettled(
                 uniqueHomeworlds.map(async (url) => {
                     let data;
-                    // Only fetch if homeworld is not cached
                     if (!homeworldData[url]) {
                         const homeworldName = await fetchHomeworld(url);
-                        data =  { url, name: homeworldName };
+                        data = { url, name: homeworldName };
                     } else {
                         data = { url, name: homeworldData[url] };
                     }
@@ -40,9 +37,9 @@ const Favourites: React.FC = () => {
                 })
             );
 
-            // Update homeworld data state
-            homeworldResponses.forEach(({ status = FULFILLED, value = {} }: {status: any, value: any}) => {
-                if(status === FULFILLED) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            homeworldResponses.forEach(({ status = FULFILLED, value = { url:"", name: "" } }: { status: any, value: {url: string, name: string} }) => {
+                if (status === FULFILLED) {
                     const { url, name } = value;
                     homeworldData[url] = name;
                 }
@@ -60,44 +57,47 @@ const Favourites: React.FC = () => {
         }
     }, []);
 
-    // Handle removal of favorites without re-triggering API calls
     const handleRemoveFavorite = useCallback(
         (charName: string) => {
-            // Directly remove the character from favorites
             removeFavorite(charName);
-            // Homeworld data should stay intact even after removal
         },
         [removeFavorite]
     );
 
     return (
-        <div>
-            <h1>Favourites List</h1>
+        <main>
+            <h1 id="favorites-title">Favourites List</h1>
             {favoriteCharacters.length === 0 ? (
-                <p>No favorites added yet.</p>
+                <p aria-live="polite">No favorites added yet.</p>
             ) : (
-                <ul>
-                    {favoriteCharacters.map((character) => (
-                        <EachFavourite
-                            key={character.name}
-                            loading={loading}
-                            character={character}
-                            homeworldData={homeworldData}
-                            handleRemoveFavorite={handleRemoveFavorite}
-                        />
-                    ))}
-                </ul>
+                <section aria-labelledby="favorites-title">
+                    <ul>
+                        {favoriteCharacters.map((character) => (
+                            <EachFavourite
+                                key={character.name}
+                                loading={loading}
+                                character={character}
+                                homeworldData={homeworldData}
+                                handleRemoveFavorite={handleRemoveFavorite}
+                            />
+                        ))}
+                    </ul>
+                </section>
             )}
-            <button onClick={resetFavorites} disabled={loading}>
+            <button
+                onClick={resetFavorites}
+                disabled={loading}
+                aria-busy={loading}
+                aria-label="Purge all favorites"
+            >
                 {loading ? 'Loading...' : 'Purge Favorites'}
             </button>
-        </div>
+        </main>
     );
 };
 
 export default Favourites;
 
-// Define types for the props
 interface EachFavoriteProps {
     character: {
         name: string;
@@ -106,7 +106,7 @@ interface EachFavoriteProps {
         homeworld: string;
     };
     loading: boolean;
-    homeworldData: Record<string, string>,
+    homeworldData: Record<string, string>;
     handleRemoveFavorite: (charName: string) => void;
 }
 
@@ -118,7 +118,8 @@ export function EachFavourite({
 }: EachFavoriteProps) {
     return (
         <li key={character.name}>
-            <strong>{character.name}</strong> ({character.gender})<br />
+            <strong>{character.name}</strong> ({character.gender})
+            <br />
             <span>Height: {character.height}</span>
             <br />
             <span>
@@ -126,7 +127,12 @@ export function EachFavourite({
                 {homeworldData[character.homeworld] || (loading ? 'Loading...' : 'Unknown')}
             </span>
             <br />
-            <button onClick={() => handleRemoveFavorite(character.name)}>Remove</button>
+            <button
+                onClick={() => handleRemoveFavorite(character.name)}
+                aria-label={`Remove ${character.name} from favorites`}
+            >
+                Remove
+            </button>
         </li>
     );
 }

@@ -10,16 +10,18 @@ const CharacterDetails: React.FC = () => {
 
     const { data, isLoading, error } = useQuery(['characterDetails', id], () => fetchCharacterDetails(id));
 
-    const {isFavorite, filmsExist, starshipsExist} = useMemo(() => {
-        return data ? {
-            isFavorite: Boolean(favorites[data.name]),
-            filmsExist: Boolean(data.films.length > 0),
-            starshipsExist: Boolean(data?.starships.length> 0)
-        } : {
-            isFavorite: false,
-            filmsExist: false,
-            starshipsExist: false
-        };
+    const { isFavorite, filmsExist, starshipsExist } = useMemo(() => {
+        return data
+            ? {
+                isFavorite: Boolean(favorites[data.name]),
+                filmsExist: Boolean(data.films.length > 0),
+                starshipsExist: Boolean(data?.starships.length > 0),
+            }
+            : {
+                isFavorite: false,
+                filmsExist: false,
+                starshipsExist: false,
+            };
     }, [data, favorites]);
 
     const handleToggleFavorite = useCallback(() => {
@@ -38,35 +40,65 @@ const CharacterDetails: React.FC = () => {
         }
     }, [data, toggleFavorite]);
 
-    if (error) return <div>Error fetching character details</div>;
-    if (isLoading) return <div>Loading...</div>;
+    if (error)
+        return (
+            <div role="alert" aria-live="assertive">
+                Error fetching character details.
+            </div>
+        );
+    if (isLoading)
+        return (
+            <div aria-live="polite" aria-busy="true">
+                Loading character details...
+            </div>
+        );
 
     return (
         <div>
             <h1>{data.name}</h1>
-            <p>Hair Color: {data.hair_color}</p>
-            <p>Eye Color: {data.eye_color}</p>
-            <p>Gender: {data.gender}</p>
-            <p>Home Planet: {data.homeworld}</p>
+            <section aria-labelledby="character-details">
+                <h2 id="character-details">Character Details</h2>
+                <p>Hair Color: {data.hair_color}</p>
+                <p>Eye Color: {data.eye_color}</p>
+                <p>Gender: {data.gender}</p>
+                <p>Home Planet: {data.homeworld}</p>
+            </section>
 
-            <h2>Films</h2>
-            <ul>
-                {filmsExist && data.films.map((film: string, index: number) => (
-                    <li key={index}>{film}</li>
-                ))}
-            </ul>
-            {!filmsExist && <div>Films does not exist</div>}
+            <section aria-labelledby="films-section">
+                <h2 id="films-section">Films</h2>
+                <ul>
+                    {filmsExist &&
+                        data.films.map((film: string, index: number) => (
+                            <li key={index}>{film}</li>
+                        ))}
+                </ul>
+                {!filmsExist && (
+                    <div aria-live="polite">No films available for this character.</div>
+                )}
+            </section>
 
-            <h2>Starships</h2>
-            <ul>
-                {starshipsExist && data?.starships.map((ship: string, index: number) => (
-                    <li key={index}>{ship}</li>
-                ))}
-            </ul>
-            {!starshipsExist && <div>Starship does not exist</div>}
+            <section aria-labelledby="starships-section">
+                <h2 id="starships-section">Starships</h2>
+                <ul>
+                    {starshipsExist &&
+                        data?.starships.map((ship: string, index: number) => (
+                            <li key={index}>{ship}</li>
+                        ))}
+                </ul>
+                {!starshipsExist && (
+                    <div aria-live="polite">No starships available for this character.</div>
+                )}
+            </section>
 
-            {/* Add/Remove from Favorites Button */}
-            <button onClick={handleToggleFavorite}>
+            <button
+                onClick={handleToggleFavorite}
+                aria-pressed={isFavorite}
+                aria-label={
+                    isFavorite
+                        ? `Remove ${data.name} from favorites`
+                        : `Add ${data.name} to favorites`
+                }
+            >
                 {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
             </button>
         </div>

@@ -29,91 +29,99 @@ const CharacterList: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const { favorites, toggleFavorite } = useFavoritesStore();
 
-    // Extract search and page from URL params
     const search = searchParams.get('search') || '';
     const page = Number(searchParams.get('page')) || 1;
 
-    // Debounced search term to minimize API calls
     const debouncedSearch = useDebounce(search, 1500);
     const prevSearchVal = usePrevious(debouncedSearch);
     const prevPageVal = usePrevious(page);
 
-    // Query to fetch character data
     const { data, isFetching, isError } = useQuery(
         ['characters', debouncedSearch, page],
         () => fetchCharacters(debouncedSearch, page),
         {
             keepPreviousData: true,
-            enabled: (page > 0 && prevSearchVal !== debouncedSearch) || (page != prevPageVal  && prevSearchVal == debouncedSearch),
+            enabled: (page > 0 && prevSearchVal !== debouncedSearch) || (page !== prevPageVal && prevSearchVal === debouncedSearch),
         }
     );
 
     const { next = null, previous = null, results = [] }: CharactersData = data || {};
 
-    // Handle search input changes
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.trim();
-        if (value === search) return; // Prevent unnecessary API call
-        setSearchParams({ search: value, page: '1' }); // Reset page to 1 on search change
+        if (value === search) return;
+        setSearchParams({ search: value, page: '1' });
     };
 
-    // Handle page navigation
     const handlePageChange = (newPage: number) => {
         setSearchParams({ search, page: String(newPage) });
     };
 
-    // Ensure API gets called on the first load with empty search
-    // useEffect(() => {
-    //     if (!searchParams.get('search')) {
-    //         setSearchParams({ search: '', page: '1' });
-    //     }
-    // }, [searchParams, setSearchParams]);
-
     return (
-        <div>
-            <h1>Star Wars Characters</h1>
+        <main>
+            <h1 id="character-list-title">Star Wars Characters</h1>
+            <label htmlFor="character-search">Search characters</label>
             <input
+                id="character-search"
                 type="text"
                 placeholder="Search characters"
                 value={search}
                 onChange={handleSearchChange}
+                aria-labelledby="character-list-title"
             />
-            {isFetching && <div>Loading...</div>}
-            {isError && <div>Error fetching characters</div>}
-            {!isFetching && !isError && (
-                <>
-                    <ul>
-                        {results.length > 0 && results.map((char: CharacterData) => (
-                            <li key={char.name}>
-                                <Link to={`/details/${char.url.split('/')[5]}`}>
-                                    {char.name} ({char.gender})
-                                </Link>
-                                <button onClick={() => toggleFavorite(char)}>
-                                    {favorites[char.name] ? 'Unfavorite' : 'Favorite'}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                    {
-                        results.length < 1 && <div>No results found</div>
-                    }
-                </>
-            )}
-            <div>
+            <div aria-live="polite">
+                {isFetching && <div>Loading...</div>}
+                {isError && <div role="alert">Error fetching characters</div>}
+                {!isFetching && !isError && results.length > 0 && (
+                    <section aria-labelledby="results-heading">
+                        <h2 id="results-heading">Character Results</h2>
+                        <ul>
+                            {results.map((char: CharacterData) => (
+                                <li key={char.name}>
+                                    <Link
+                                        to={`/details/${char.url.split('/')[5]}`}
+                                        aria-label={`View details about ${char.name}`}
+                                    >
+                                        {char.name} ({char.gender})
+                                    </Link>
+                                    <button
+                                        onClick={() => toggleFavorite(char)}
+                                        aria-label={
+                                            favorites[char.name]
+                                                ? `Unfavorite ${char.name}`
+                                                : `Favorite ${char.name}`
+                                        }
+                                    >
+                                        {favorites[char.name] ? 'Unfavorite' : 'Favorite'}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
+                {!isFetching && !isError && results.length === 0 && (
+                    <div role="alert">No results found</div>
+                )}
+            </div>
+            <div role="navigation" aria-label="Pagination">
                 <button
                     disabled={isFetching || !previous}
                     onClick={() => handlePageChange(page - 1)}
+                    aria-disabled={isFetching || !previous}
+                    aria-label="Go to the previous page"
                 >
                     Previous
                 </button>
                 <button
                     disabled={isFetching || !next}
                     onClick={() => handlePageChange(page + 1)}
+                    aria-disabled={isFetching || !next}
+                    aria-label="Go to the next page"
                 >
                     Next
                 </button>
             </div>
-        </div>
+        </main>
     );
 };
 
