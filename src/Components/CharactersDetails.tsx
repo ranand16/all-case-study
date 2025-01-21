@@ -1,8 +1,8 @@
-import useFavoritesStore from '@src/Hooks/useFavoritesStore';
-import { fetchCharacterDetails } from '@src/Services/ApiUtility';
 import React, { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
+import useFavoritesStore from '../Hooks/useFavoritesStore';
+import { fetchCharacterDetails } from '../Services/ApiUtility';
 
 const CharacterDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -22,8 +22,6 @@ const CharacterDetails: React.FC = () => {
         };
     }, [data, favorites]);
 
-        console.log("🚀 ~ const{isFavorite,filmsExist,starshipsExist}=useMemo ~ starshipsExist:", starshipsExist)
-        console.log("🚀 ~ const{isFavorite,filmsExist,starshipsExist}=useMemo ~ filmsExist:", filmsExist)
     const handleToggleFavorite = useCallback(() => {
         if (data) {
             toggleFavorite({
@@ -40,8 +38,8 @@ const CharacterDetails: React.FC = () => {
         }
     }, [data, toggleFavorite]);
 
-    if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error fetching character details</div>;
+    if (isLoading) return <div>Loading...</div>;
 
     return (
         <div>

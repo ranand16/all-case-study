@@ -1,10 +1,10 @@
-import useDebounce from '@src/Hooks/useDebounce';
-import useFavoritesStore from '@src/Hooks/useFavoritesStore';
-import usePrevious from '@src/Hooks/usePrevious';
-import { fetchCharacters } from '@src/Services/ApiUtility';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { Link, useSearchParams } from 'react-router-dom';
+import useDebounce from '../Hooks/useDebounce';
+import useFavoritesStore from '../Hooks/useFavoritesStore';
+import usePrevious from '../Hooks/usePrevious';
+import { fetchCharacters } from '../Services/ApiUtility';
 
 export interface CharacterData {
     name: string;
@@ -41,10 +41,7 @@ const CharacterList: React.FC = () => {
     // Query to fetch character data
     const { data, isFetching, isError } = useQuery(
         ['characters', debouncedSearch, page],
-        () => {
-            console.log(prevSearchVal, " :: ", debouncedSearch);
-            return fetchCharacters(debouncedSearch, page)
-        },
+        () => fetchCharacters(debouncedSearch, page),
         {
             keepPreviousData: true,
             enabled: (page > 0 && prevSearchVal !== debouncedSearch) || (page != prevPageVal  && prevSearchVal == debouncedSearch),
@@ -56,7 +53,6 @@ const CharacterList: React.FC = () => {
     // Handle search input changes
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.trim();
-        console.log("🚀 ~ handleSearchChange ~ value:", value, " :: ", search)
         if (value === search) return; // Prevent unnecessary API call
         setSearchParams({ search: value, page: '1' }); // Reset page to 1 on search change
     };

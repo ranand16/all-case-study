@@ -1,5 +1,5 @@
-import { SWAPI_BASE_URL } from "@src/Helper/constants";
 import axios from "axios";
+import { SWAPI_BASE_URL } from "../Helper/constants";
 
 export const fetchCharacters = async (search: string, page: number) => {
     const response = await axios.get(`${SWAPI_BASE_URL}/?search=${search}&page=${page}`);
@@ -32,7 +32,3 @@ export const fetchHomeworld = async (url: string): Promise<string> => {
     const data = await response.json();
     return data.name; // Assuming the API returns a `name` field for the planet
 };
-
-// export const api = {
-//     fetchCharacters: jest.fn()
-// };

@@ -1,6 +1,6 @@
-import { CharacterData } from '@src/Components/CharactersList';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { CharacterData } from '../Components/CharactersList';
 
 interface FavoritesState {
     favorites: Record<string, CharacterData>; // Stores characters by name

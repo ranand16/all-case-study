@@ -1,11 +1,10 @@
-import { FULFILLED } from '@src/Helper/constants';
-import useFavoritesStore from '@src/Hooks/useFavoritesStore';
-import { fetchHomeworld } from '@src/Services/ApiUtility';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FULFILLED } from '../Helper/constants';
+import useFavoritesStore from '../Hooks/useFavoritesStore';
+import { fetchHomeworld } from '../Services/ApiUtility';
 
 const Favourites: React.FC = () => {
     const { favorites, removeFavorite, resetFavorites } = useFavoritesStore();
-    console.log("🚀 ~ favorites:", favorites)
     const [loading, setLoading] = useState(false);
 
     // Memoize favorite characters and homeworld URLs
@@ -14,13 +13,11 @@ const Favourites: React.FC = () => {
         const uniqueUrls = Array.from(
             new Set(characters.map((char) => char.homeworld).filter(Boolean))
         );
-        console.log("🚀 ~ uniqueUrls:", uniqueUrls)
 
         const homeworldData = uniqueUrls.reduce((acc, url) => {
             acc[url] = null; // Initialize homeworld as null
             return acc;
         }, {} as Record<string, string>);
-        console.log("🚀 ~ homeworldData:", homeworldData)
 
         return { favoriteCharacters: characters, uniqueHomeworlds: uniqueUrls, homeworldData };
     }, [favorites]);
@@ -35,24 +32,18 @@ const Favourites: React.FC = () => {
                     // Only fetch if homeworld is not cached
                     if (!homeworldData[url]) {
                         const homeworldName = await fetchHomeworld(url);
-                        console.log("🚀 ~ uniqueHomeworlds.map ~ homeworldName: if", homeworldName)
                         data =  { url, name: homeworldName };
                     } else {
-                        console.log("🚀 ~ uniqueHomeworlds.map ~ homeworldName: else ", homeworldData[url])
                         data = { url, name: homeworldData[url] };
                     }
-                    console.log("🚀 ~ uniqueHomeworlds.map ~ data:", data)
                     return data;
                 })
             );
 
-            console.log("🚀 ~ fetchHomeworlds ~ homeworldResponses:", homeworldResponses)
             // Update homeworld data state
             homeworldResponses.forEach(({ status = FULFILLED, value = {} }: {status: any, value: any}) => {
                 if(status === FULFILLED) {
                     const { url, name } = value;
-                    console.log("🚀 ~ homeworldResponses.forEach ~ name:", name)
-                    console.log("🚀 ~ homeworldResponses.forEach ~ url:", url)
                     homeworldData[url] = name;
                 }
             });
@@ -64,7 +55,6 @@ const Favourites: React.FC = () => {
     }, [uniqueHomeworlds, homeworldData]);
 
     useEffect(() => {
-        console.log("🚀 ~ useEffect ~ uniqueHomeworlds:", uniqueHomeworlds.length)
         if (uniqueHomeworlds.length > 0) {
             fetchHomeworlds();
         }
@@ -126,8 +116,6 @@ export function EachFavourite({
     homeworldData,
     handleRemoveFavorite,
 }: EachFavoriteProps) {
-    // console.log("🚀 ~ character:", character)
-    // console.log("🚀 ~ homeworldData:", homeworldData)
     return (
         <li key={character.name}>
             <strong>{character.name}</strong> ({character.gender})<br />
