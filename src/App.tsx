@@ -11,7 +11,9 @@ const Favourites = lazy(() => import('./Components/FavoriteCharacters'));
 const App: React.FC = () => (
     <Container paddingY={4}  maxW='container.md'>
         <Stack direction={['column']} spacing={2}>
-            <BrowserRouter>
+            <BrowserRouter future={{
+                v7_startTransition: true
+            }}>
                 <Flex minWidth='max-content' alignItems='center' gap='2'>
                     <Box>
                         <Link as={ReactLink} to="/" style={{ textDecoration: 'none' }}>

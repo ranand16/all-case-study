@@ -32,5 +32,6 @@
     "prev":"Previous",
     "next": "Next",
     "404pagenotfound":"404 - Page Not Found",
-    "pagedoesnotexists":"The page you are looking for does not exist."
+    "pagedoesnotexists":"The page you are looking for does not exist.",
+    "gohome": "Go to Home"
 }

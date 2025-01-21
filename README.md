@@ -37,11 +37,12 @@ The frontend will is built using React with TypeScript. The application will con
 - TypeScript: For type safety
 - React Router: For navigation between views
 - React-query: For making HTTP requests to SWAPI API
+- Chakra UI: For web components
 - Jest and React testing library: For unit testing
 
 ### Responsive Design
 
-- Need to implement....
+- Used Chakra UI for components and their responsivness
 
 ### State management
 

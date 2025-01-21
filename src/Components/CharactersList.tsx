@@ -12,7 +12,6 @@ import {
     Stack,
     Text,
     UnorderedList,
-    useColorModeValue
 } from '@chakra-ui/react';
 import { STRINGS } from '@src/lang/language';
 import React from 'react';
@@ -78,11 +77,11 @@ const CharacterList: React.FC = () => {
     };
 
     return (
-        <Box as="main" p={6} bg={useColorModeValue('gray.50', 'gray.800')} minH="100vh">
+        <Box as="main" p={6} bg="gray.50" minH="100vh">
             <Stack spacing={8}>
                 {/* Header Section */}
                 <Box>
-                    <Heading size="lg" color={useColorModeValue('teal.600', 'teal.300')}>
+                    <Heading size="lg" color="teal.600">
                         {STRINGS["starwarchars"]}
                     </Heading>
                     <FormLabel htmlFor="character-search" mt={4}>
@@ -94,7 +93,7 @@ const CharacterList: React.FC = () => {
                         placeholder="Search characters"
                         value={search}
                         onChange={handleSearchChange}
-                        bg={useColorModeValue('white', 'gray.700')}
+                        bg="white"
                         borderRadius="md"
                         aria-labelledby="character-list-title"
                     />
@@ -110,7 +109,7 @@ const CharacterList: React.FC = () => {
                     )}
                     {!isFetching && !isError && results.length > 0 && (
                         <Box>
-                            <Heading size="md" color={useColorModeValue('teal.600', 'teal.300')} mb={4}>
+                            <Heading size="md" color="teal.600" mb={4}>
                                 {STRINGS["chardet"]}
                             </Heading>
                             <UnorderedList spacing={3}>
@@ -118,7 +117,7 @@ const CharacterList: React.FC = () => {
                                     <ListItem key={char.name} listStyleType="none">
                                         <Flex
                                             p={3}
-                                            bg={useColorModeValue('white', 'gray.700')}
+                                            bg="white"
                                             borderRadius="md"
                                             alignItems="center"
                                             justifyContent="space-between"
@@ -127,7 +126,7 @@ const CharacterList: React.FC = () => {
                                             <Link
                                                 as={ReactRouterLink}
                                                 to={`/details/${char.url.split('/')[5]}`}
-                                                color={useColorModeValue('teal.600', 'teal.300')}
+                                                color="teal.600"
                                                 fontWeight="bold"
                                                 aria-label={`View details about ${char.name}`}
                                             >
