@@ -1,7 +1,24 @@
+import {
+    Box,
+    Button,
+    Flex,
+    FormLabel,
+    Heading,
+    IconButton,
+    Input,
+    Link,
+    ListItem,
+    Progress,
+    Stack,
+    Text,
+    UnorderedList,
+    useColorModeValue
+} from '@chakra-ui/react';
 import { STRINGS } from '@src/lang/language';
 import React from 'react';
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import { useQuery } from 'react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link as ReactRouterLink, useSearchParams } from 'react-router-dom';
 import useDebounce from '../Hooks/useDebounce';
 import useFavoritesStore from '../Hooks/useFavoritesStore';
 import usePrevious from '../Hooks/usePrevious';
@@ -33,7 +50,7 @@ const CharacterList: React.FC = () => {
     const search = searchParams.get('search') || '';
     const page = Number(searchParams.get('page')) || 1;
 
-    const debouncedSearch = useDebounce(search, 1500);
+    const debouncedSearch = useDebounce(search, 500);
     const prevSearchVal = usePrevious(debouncedSearch);
     const prevPageVal = usePrevious(page);
 
@@ -42,7 +59,9 @@ const CharacterList: React.FC = () => {
         () => fetchCharacters(debouncedSearch, page),
         {
             keepPreviousData: true,
-            enabled: (page > 0 && prevSearchVal !== debouncedSearch) || (page !== prevPageVal && prevSearchVal === debouncedSearch),
+            enabled:
+                (page > 0 && prevSearchVal !== debouncedSearch) ||
+                (page !== prevPageVal && prevSearchVal === debouncedSearch),
         }
     );
 
@@ -59,70 +78,107 @@ const CharacterList: React.FC = () => {
     };
 
     return (
-        <main>
-            <h1 id="character-list-title">{STRINGS["starwarchars"]}</h1>
-            <label htmlFor="character-search">{STRINGS["searchchars"]}: </label>
-            <input
-                id="character-search"
-                type="text"
-                placeholder="Search characters"
-                value={search}
-                onChange={handleSearchChange}
-                aria-labelledby="character-list-title"
-            />
-            <div aria-live="polite">
-                {isFetching && <div>{STRINGS["loading"]}</div>}
-                {isError && <div role="alert">{STRINGS["errorfetchchars"]}</div>}
-                {!isFetching && !isError && results.length > 0 && (
-                    <section aria-labelledby="results-heading">
-                        <h2 id="results-heading">{STRINGS["chardet"]}</h2>
-                        <ul>
-                            {results.map((char: CharacterData) => (
-                                <li key={char.name}>
-                                    <Link
-                                        to={`/details/${char.url.split('/')[5]}`}
-                                        aria-label={`View details about ${char.name}`}
-                                    >
-                                        {char.name} ({char.gender})
-                                    </Link>
-                                    <button
-                                        onClick={() => toggleFavorite(char)}
-                                        aria-label={
-                                            favorites[char.name]
-                                                ? `Unfavorite ${char.name}`
-                                                : `Favorite ${char.name}`
-                                        }
-                                    >
-                                        {favorites[char.name] ? `${STRINGS["unfav"]}` : `${STRINGS["fav"]}`}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                )}
-                {!isFetching && !isError && results.length === 0 && (
-                    <div role="alert">{STRINGS["noresfound"]}</div>
-                )}
-            </div>
-            <div role="navigation" aria-label="Pagination">
-                <button
-                    disabled={isFetching || !previous}
-                    onClick={() => handlePageChange(page - 1)}
-                    aria-disabled={isFetching || !previous}
-                    aria-label="Go to the previous page"
-                >
-                    {STRINGS["prev"]}
-                </button>
-                <button
-                    disabled={isFetching || !next}
-                    onClick={() => handlePageChange(page + 1)}
-                    aria-disabled={isFetching || !next}
-                    aria-label="Go to the next page"
-                >
-                    {STRINGS["next"]}
-                </button>
-            </div>
-        </main>
+        <Box as="main" p={6} bg={useColorModeValue('gray.50', 'gray.800')} minH="100vh">
+            <Stack spacing={8}>
+                {/* Header Section */}
+                <Box>
+                    <Heading size="lg" color={useColorModeValue('teal.600', 'teal.300')}>
+                        {STRINGS["starwarchars"]}
+                    </Heading>
+                    <FormLabel htmlFor="character-search" mt={4}>
+                        {STRINGS["searchchars"]}
+                    </FormLabel>
+                    <Input
+                        id="character-search"
+                        type="text"
+                        placeholder="Search characters"
+                        value={search}
+                        onChange={handleSearchChange}
+                        bg={useColorModeValue('white', 'gray.700')}
+                        borderRadius="md"
+                        aria-labelledby="character-list-title"
+                    />
+                </Box>
+
+                {/* Results Section */}
+                <Box aria-live="polite">
+                    {isFetching && <Progress size="xs" isIndeterminate />}
+                    {isError && (
+                        <Text color="red.500" role="alert">
+                            {STRINGS["errorfetchchars"]}
+                        </Text>
+                    )}
+                    {!isFetching && !isError && results.length > 0 && (
+                        <Box>
+                            <Heading size="md" color={useColorModeValue('teal.600', 'teal.300')} mb={4}>
+                                {STRINGS["chardet"]}
+                            </Heading>
+                            <UnorderedList spacing={3}>
+                                {results.map((char: CharacterData) => (
+                                    <ListItem key={char.name} listStyleType="none">
+                                        <Flex
+                                            p={3}
+                                            bg={useColorModeValue('white', 'gray.700')}
+                                            borderRadius="md"
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            boxShadow="sm"
+                                        >
+                                            <Link
+                                                as={ReactRouterLink}
+                                                to={`/details/${char.url.split('/')[5]}`}
+                                                color={useColorModeValue('teal.600', 'teal.300')}
+                                                fontWeight="bold"
+                                                aria-label={`View details about ${char.name}`}
+                                            >
+                                                {char.name} ({char.gender})
+                                            </Link>
+                                            <IconButton
+                                                icon={favorites[char.name] ? <MdFavorite /> : <MdFavoriteBorder />}
+                                                colorScheme={favorites[char.name] ? 'red' : 'gray'}
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => toggleFavorite(char)}
+                                                aria-label={
+                                                    favorites[char.name]
+                                                        ? `Unfavorite ${char.name}`
+                                                        : `Favorite ${char.name}`
+                                                }
+                                            />
+                                        </Flex>
+                                    </ListItem>
+                                ))}
+                            </UnorderedList>
+                        </Box>
+                    )}
+                    {!isFetching && !isError && results.length === 0 && (
+                        <Text role="alert" color="gray.500">
+                            {STRINGS["noresfound"]}
+                        </Text>
+                    )}
+                </Box>
+
+                {/* Pagination Section */}
+                <Flex justifyContent="space-between" mt={6}>
+                    <Button
+                        colorScheme="blue"
+                        disabled={isFetching || !previous}
+                        onClick={() => handlePageChange(page - 1)}
+                        aria-label="Go to the previous page"
+                    >
+                        {STRINGS["prev"]}
+                    </Button>
+                    <Button
+                        colorScheme="blue"
+                        disabled={isFetching || !next}
+                        onClick={() => handlePageChange(page + 1)}
+                        aria-label="Go to the next page"
+                    >
+                        {STRINGS["next"]}
+                    </Button>
+                </Flex>
+            </Stack>
+        </Box>
     );
 };
 

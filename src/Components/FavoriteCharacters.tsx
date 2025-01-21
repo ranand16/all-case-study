@@ -1,3 +1,4 @@
+import { Box, Button, Card, CardBody, CardFooter, CardHeader, CircularProgress, Flex, Heading, SimpleGrid, Stack, Text } from '@chakra-ui/react';
 import { STRINGS } from '@src/lang/language';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FULFILLED } from '../Helper/constants';
@@ -67,32 +68,43 @@ const Favourites: React.FC = () => {
 
     return (
         <main>
-            <h1 id="favorites-title">{STRINGS["favlist"]}</h1>
-            {favoriteCharacters.length === 0 ? (
-                <p aria-live="polite">{STRINGS["nofavs"]}</p>
-            ) : (
-                <section aria-labelledby="favorites-title">
-                    <ul>
-                        {favoriteCharacters.map((character) => (
-                            <EachFavourite
-                                key={character.name}
-                                loading={loading}
-                                character={character}
-                                homeworldData={homeworldData}
-                                handleRemoveFavorite={handleRemoveFavorite}
-                            />
-                        ))}
-                    </ul>
-                </section>
-            )}
-            <button
-                onClick={resetFavorites}
-                disabled={loading}
-                aria-busy={loading}
-                aria-label="Purge all favorites"
-            >
-                {loading ? STRINGS["loading"] : STRINGS["purgefavs"]}
-            </button>
+            <Stack direction={"column"} spacing={2}>
+                <Flex direction={"row"} justifyContent={"space-between"}>
+                    <Heading size={"lg"} id="favorites-title">{STRINGS["favlist"]}</Heading>
+                    {
+                        favoriteCharacters.length !== 0 && 
+                        <Button
+                            size={"xs"}
+                            onClick={resetFavorites}
+                            colorScheme='blue'
+                            disabled={loading}
+                            aria-busy={loading}
+                            aria-label="Purge all favorites"
+                        >
+                            {loading ? STRINGS["loading"] : STRINGS["purgefavs"]}
+                        </Button>
+                    }
+                </Flex>
+                {favoriteCharacters.length === 0 ? (
+                    <Box boxSize={"max-content"} alignContent={"center"}>
+                        <Text size={"sm"} aria-live="polite">{STRINGS["nofavs"]}</Text>
+                    </Box>
+                ) : (
+                    <section aria-labelledby="favorites-title">
+                        <SimpleGrid spacing={4} templateColumns='repeat(auto-fill, minmax(200px, 1fr))'>
+                            {favoriteCharacters.map((character) => (
+                                <EachFavourite
+                                    key={character.name}
+                                    loading={loading}
+                                    character={character}
+                                    homeworldData={homeworldData}
+                                    handleRemoveFavorite={handleRemoveFavorite}
+                                />
+                            ))}
+                        </SimpleGrid>
+                    </section>
+                )}
+            </Stack>
         </main>
     );
 };
@@ -118,22 +130,27 @@ export function EachFavourite({
     handleRemoveFavorite,
 }: EachFavoriteProps) {
     return (
-        <li key={character.name}>
-            <strong>{character.name}</strong> ({character.gender})
-            <br />
-            <span>{STRINGS["height"]}: {character.height}</span>
-            <br />
-            <span>
-                {STRINGS["homeplanet"]}:{' '}
-                {homeworldData[character.homeworld] || (loading ? `${STRINGS["loading"]}` : `${STRINGS["unknown"]}`)}
-            </span>
-            <br />
-            <button
-                onClick={() => handleRemoveFavorite(character.name)}
-                aria-label={`Remove ${character.name} from favorites`}
-            >
-                {STRINGS["remove"]}
-            </button>
-        </li>
+            <Card>
+                <CardHeader>
+                <Heading size='md'> {character.name}({character.gender})</Heading>
+                </CardHeader>
+                <CardBody>
+                    <Text>{STRINGS["height"]}: {character.height}</Text>
+                    <Text>
+                        {STRINGS["homeplanet"]}:{' '}
+                        {homeworldData[character.homeworld] || (loading && <CircularProgress size={4} isIndeterminate color='blue' />)}
+                    </Text>
+                </CardBody>
+                <CardFooter>
+                <Button
+                    size={"sm"}
+                    colorScheme='blue'
+                    onClick={() => handleRemoveFavorite(character.name)}
+                    aria-label={`Remove ${character.name} from favorites`}
+                >
+                    {STRINGS["remove"]}
+                </Button>
+                </CardFooter>
+            </Card>
     );
 }

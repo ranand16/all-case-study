@@ -1,5 +1,18 @@
+import {
+    Box,
+    Divider,
+    Flex,
+    Heading,
+    IconButton,
+    ListItem,
+    Progress,
+    Stack,
+    Text,
+    UnorderedList,
+} from '@chakra-ui/react';
 import { STRINGS } from '@src/lang/language';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import useFavoritesStore from '../Hooks/useFavoritesStore';
@@ -11,98 +24,110 @@ const CharacterDetails: React.FC = () => {
 
     const { data, isLoading, error } = useQuery(['characterDetails', id], () => fetchCharacterDetails(id));
 
-    const { isFavorite, filmsExist, starshipsExist } = useMemo(() => {
+    const { filmsExist, starshipsExist } = useMemo(() => {
         return data
             ? {
-                isFavorite: Boolean(favorites[data.name]),
-                filmsExist: Boolean(data.films.length > 0),
-                starshipsExist: Boolean(data?.starships.length > 0),
-            }
+                  filmsExist: Boolean(data.films.length > 0),
+                  starshipsExist: Boolean(data?.starships.length > 0),
+              }
             : {
-                isFavorite: false,
-                filmsExist: false,
-                starshipsExist: false,
-            };
-    }, [data, favorites]);
+                  filmsExist: false,
+                  starshipsExist: false,
+              };
+    }, [data]);
 
-    const handleToggleFavorite = useCallback(() => {
-        if (data) {
-            toggleFavorite({
-                name: data.name,
-                gender: data.gender,
-                homeworld: data.homeworld,
-                height: data.height,
-                eye_color: data.eye_color,
-                hair_color: data.hair_color,
-                films: data.films,
-                starships: data.starships,
-                url: data.url,
-            });
-        }
-    }, [data, toggleFavorite]);
+    if (error) {
+        return (
+            <Box role="alert" aria-live="assertive" p={4} bg="red.50" borderRadius="md">
+                <Text color="red.500">{STRINGS['errofetchchardet']}</Text>
+            </Box>
+        );
+    }
 
-    if (error)
-        return (
-            <div role="alert" aria-live="assertive">
-                {STRINGS["errofetchchardet"]}
-            </div>
-        );
-    if (isLoading)
-        return (
-            <div aria-live="polite" aria-busy="true">
-                {STRINGS["loadingcharacter"]}
-            </div>
-        );
+    if (isLoading) {
+        return <Progress size="xs" isIndeterminate />;
+    }
 
     return (
-        <div>
-            <h1>{data.name}</h1>
-            <section aria-labelledby="character-details">
-                <h2 id="character-details">{STRINGS["characterdetails"]}</h2>
-                <p>{STRINGS["haircolor"]}: {data.hair_color}</p>
-                <p>{STRINGS["eyecolor"]}: {data.eye_color}</p>
-                <p>{STRINGS["gender"]}: {data.gender}</p>
-                <p>{STRINGS["homeplanet"]}: {data.homeworld}</p>
-            </section>
+        <Box as="main" p={6} bg="gray.50" minH="100vh" borderRadius="md" boxShadow="md">
+            <Stack spacing={6}>
+                {/* Character Header */}
+                <Flex alignItems="center" justifyContent="space-between">
+                    <Heading size="lg" color="teal.600">
+                        {data.name}
+                    </Heading>
+                    <IconButton
+                        icon={favorites[data.name] ? <MdFavorite /> : <MdFavoriteBorder />}
+                        colorScheme={favorites[data.name] ? 'red' : 'gray'}
+                        aria-label={favorites[data.name] ? `Unfavorite ${data.name}` : `Favorite ${data.name}`}
+                        onClick={() => toggleFavorite(data)}
+                    />
+                </Flex>
 
-            <section aria-labelledby="films-section">
-                <h2 id="films-section">{STRINGS["films"]}</h2>
-                <ul>
-                    {filmsExist &&
-                        data.films.map((film: string, index: number) => (
-                            <li key={index}>{film}</li>
-                        ))}
-                </ul>
-                {!filmsExist && (
-                    <div aria-live="polite">{STRINGS["nofilmsavailable"]}</div>
-                )}
-            </section>
+                <Divider />
 
-            <section aria-labelledby="starships-section">
-                <h2 id="starships-section">{STRINGS["starships"]}</h2>
-                <ul>
-                    {starshipsExist &&
-                        data?.starships.map((ship: string, index: number) => (
-                            <li key={index}>{ship}</li>
-                        ))}
-                </ul>
-                {!starshipsExist && (
-                    <div aria-live="polite">{STRINGS["nostarshipsavailable"]}</div>
-                )}
-            </section>
+                {/* Character Details */}
+                <Box as="section" aria-labelledby="character-details">
+                    <Heading id="character-details" size="md" color="teal.500" mb={2}>
+                        {STRINGS['characterdetails']}
+                    </Heading>
+                    <Stack spacing={1}>
+                        <Text>
+                            <strong>{STRINGS['haircolor']}</strong>: {data.hair_color}
+                        </Text>
+                        <Text>
+                            <strong>{STRINGS['eyecolor']}</strong>: {data.eye_color}
+                        </Text>
+                        <Text>
+                            <strong>{STRINGS['gender']}</strong>: {data.gender}
+                        </Text>
+                        <Text>
+                            <strong>{STRINGS['homeplanet']}</strong>: {data.homeworld}
+                        </Text>
+                    </Stack>
+                </Box>
 
-            <button
-                onClick={handleToggleFavorite}
-                aria-pressed={isFavorite}
-                aria-label={
-                    isFavorite
-                        ? `Remove ${data.name} from favorites`
-                        : `Add ${data.name} to favorites`
-                }
-            >
-                {isFavorite ? `${STRINGS["removefromfav"]}` : `${STRINGS["addtofav"]}`}
-            </button>
-        </div>
+                <Divider />
+
+                {/* Films Section */}
+                <Box as="section" aria-labelledby="films-section">
+                    <Heading id="films-section" size="md" color="teal.500" mb={2}>
+                        {STRINGS['films']}
+                    </Heading>
+                    {filmsExist ? (
+                        <UnorderedList>
+                            {data.films.map((film: string, index: number) => (
+                                <ListItem key={index}>{film}</ListItem>
+                            ))}
+                        </UnorderedList>
+                    ) : (
+                        <Text color="gray.500" aria-live="polite">
+                            {STRINGS['nofilmsavailable']}
+                        </Text>
+                    )}
+                </Box>
+
+                <Divider />
+
+                {/* Starships Section */}
+                <Box as="section" aria-labelledby="starships-section">
+                    <Heading id="starships-section" size="md" color="teal.500" mb={2}>
+                        {STRINGS['starships']}
+                    </Heading>
+                    {starshipsExist ? (
+                        <UnorderedList>
+                            {data.starships.map((ship: string, index: number) => (
+                                <ListItem key={index}>{ship}</ListItem>
+                            ))}
+                        </UnorderedList>
+                    ) : (
+                        <Text color="gray.500" aria-live="polite">
+                            {STRINGS['nostarshipsavailable']}
+                        </Text>
+                    )}
+                </Box>
+            </Stack>
+        </Box>
     );
 };
 
