@@ -1,3 +1,4 @@
+import { STRINGS } from '@src/lang/language';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -59,8 +60,8 @@ const CharacterList: React.FC = () => {
 
     return (
         <main>
-            <h1 id="character-list-title">Star Wars Characters</h1>
-            <label htmlFor="character-search">Search characters</label>
+            <h1 id="character-list-title">{STRINGS["starwarchars"]}</h1>
+            <label htmlFor="character-search">{STRINGS["searchchars"]}: </label>
             <input
                 id="character-search"
                 type="text"
@@ -70,11 +71,11 @@ const CharacterList: React.FC = () => {
                 aria-labelledby="character-list-title"
             />
             <div aria-live="polite">
-                {isFetching && <div>Loading...</div>}
-                {isError && <div role="alert">Error fetching characters</div>}
+                {isFetching && <div>{STRINGS["loading"]}</div>}
+                {isError && <div role="alert">{STRINGS["errorfetchchars"]}</div>}
                 {!isFetching && !isError && results.length > 0 && (
                     <section aria-labelledby="results-heading">
-                        <h2 id="results-heading">Character Results</h2>
+                        <h2 id="results-heading">{STRINGS["chardet"]}</h2>
                         <ul>
                             {results.map((char: CharacterData) => (
                                 <li key={char.name}>
@@ -92,7 +93,7 @@ const CharacterList: React.FC = () => {
                                                 : `Favorite ${char.name}`
                                         }
                                     >
-                                        {favorites[char.name] ? 'Unfavorite' : 'Favorite'}
+                                        {favorites[char.name] ? `${STRINGS["unfav"]}` : `${STRINGS["fav"]}`}
                                     </button>
                                 </li>
                             ))}
@@ -100,7 +101,7 @@ const CharacterList: React.FC = () => {
                     </section>
                 )}
                 {!isFetching && !isError && results.length === 0 && (
-                    <div role="alert">No results found</div>
+                    <div role="alert">{STRINGS["noresfound"]}</div>
                 )}
             </div>
             <div role="navigation" aria-label="Pagination">
@@ -110,7 +111,7 @@ const CharacterList: React.FC = () => {
                     aria-disabled={isFetching || !previous}
                     aria-label="Go to the previous page"
                 >
-                    Previous
+                    {STRINGS["prev"]}
                 </button>
                 <button
                     disabled={isFetching || !next}
@@ -118,7 +119,7 @@ const CharacterList: React.FC = () => {
                     aria-disabled={isFetching || !next}
                     aria-label="Go to the next page"
                 >
-                    Next
+                    {STRINGS["next"]}
                 </button>
             </div>
         </main>

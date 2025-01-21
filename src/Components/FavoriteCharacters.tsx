@@ -1,3 +1,4 @@
+import { STRINGS } from '@src/lang/language';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FULFILLED } from '../Helper/constants';
 import useFavoritesStore from '../Hooks/useFavoritesStore';
@@ -66,9 +67,9 @@ const Favourites: React.FC = () => {
 
     return (
         <main>
-            <h1 id="favorites-title">Favourites List</h1>
+            <h1 id="favorites-title">{STRINGS["favlist"]}</h1>
             {favoriteCharacters.length === 0 ? (
-                <p aria-live="polite">No favorites added yet.</p>
+                <p aria-live="polite">{STRINGS["nofavs"]}</p>
             ) : (
                 <section aria-labelledby="favorites-title">
                     <ul>
@@ -90,7 +91,7 @@ const Favourites: React.FC = () => {
                 aria-busy={loading}
                 aria-label="Purge all favorites"
             >
-                {loading ? 'Loading...' : 'Purge Favorites'}
+                {loading ? STRINGS["loading"] : STRINGS["purgefavs"]}
             </button>
         </main>
     );
@@ -120,18 +121,18 @@ export function EachFavourite({
         <li key={character.name}>
             <strong>{character.name}</strong> ({character.gender})
             <br />
-            <span>Height: {character.height}</span>
+            <span>{STRINGS["height"]}: {character.height}</span>
             <br />
             <span>
-                Home Planet:{' '}
-                {homeworldData[character.homeworld] || (loading ? 'Loading...' : 'Unknown')}
+                {STRINGS["homeplanet"]}:{' '}
+                {homeworldData[character.homeworld] || (loading ? `${STRINGS["loading"]}` : `${STRINGS["unknown"]}`)}
             </span>
             <br />
             <button
                 onClick={() => handleRemoveFavorite(character.name)}
                 aria-label={`Remove ${character.name} from favorites`}
             >
-                Remove
+                {STRINGS["remove"]}
             </button>
         </li>
     );

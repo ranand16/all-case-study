@@ -1,11 +1,9 @@
 Allica bank case study
 
-# Steps to start project locally:
+## Steps to start project locally:
 
 - npm i
 - npm start
-
-# Other important notes:
 
 ## Frontend Architecture Overview
 
@@ -71,6 +69,10 @@ The frontend will is built using React with TypeScript. The application will con
 
 - Announcements for Empty States:
   aria-live="polite" - empty states for films and starships to notify users dynamically.
+
+## Language support
+
+- Added strings to a json file so that it can be salvaged by language plugins later.
 
 ### Performance Optimization
 
