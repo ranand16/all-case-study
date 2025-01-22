@@ -1,10 +1,10 @@
-import React from "react";
+import { useEffect, useRef } from "react";
 
 // number string both support
 export default function usePrevious(value: string | number): number | string | undefined {
-    const ref = React.useRef<string | number | undefined>();
+    const ref = useRef<string | number | undefined>();
 
-    React.useEffect(() => {
+    useEffect(() => {
         ref.current = value;
     }, [value]); 
 

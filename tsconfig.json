@@ -15,7 +15,8 @@
     "paths": {
       "*": ["node_modules/*"],
       "@assets/*": ["./assets/*"],
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "@services/*": ["./src/Services/*"]
     }
   },
   "include": ["src/**/*", "configs/**/*", "setupTests.ts"]

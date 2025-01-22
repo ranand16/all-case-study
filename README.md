@@ -2,8 +2,8 @@ Allica bank case study
 
 ## Steps to start project locally:
 
-- npm i
-- npm start
+- `npm i`
+- `npm start`
 
 ## Frontend Architecture Overview
 
@@ -83,6 +83,12 @@ The frontend will is built using React with TypeScript. The application will con
 
 ## Improvments that can be made
 
+- Data hydration of home world can be done later on homepage
+- Data fetching can be stopped on any page when I am monkey hoppnig over pages
+
+## Features that can be added
+
 - Add frontend/server based user authentication.
 - After authentication is implemented we can plan to shift data store from zustand to redux.
-- Right now we persist data in localStorage, we can shift it to server.
+- Right now we persist favourites data in localStorage, we can shift it to server.
+- Added `colorScheme` in each page to apply color schemes like blue red, yellow...

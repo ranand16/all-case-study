@@ -1,42 +1,50 @@
-import {
-    Box,
-    Divider,
-    Flex,
-    Heading,
-    IconButton,
-    ListItem,
-    Progress,
-    Stack,
-    Text,
-    UnorderedList,
-} from '@chakra-ui/react';
-import { STRINGS } from '@src/lang/language';
-import React, { useMemo } from 'react';
-import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
-import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
-import useFavoritesStore from '../Hooks/useFavoritesStore';
-import { fetchCharacterDetails } from '../Services/ApiUtility';
+import { Box, Divider, Flex, Heading, IconButton, ListItem, Progress, Stack, Text, UnorderedList } from "@chakra-ui/react";
+import useFavoritesStore from "@src/Hooks/useFavoritesStore";
+import { STRINGS } from "@src/lang/language";
+import { fetchCharacterDetails, fetchCharacterFilms, fetchHomeWorldDetails, fetchStarshipDetails } from "@src/Services/ApiUtility";
+import React from "react";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { useQuery } from "react-query";
+import { useParams } from "react-router";
 
 const CharacterDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { favorites, toggleFavorite } = useFavoritesStore();
 
-    const { data, isLoading, error } = useQuery(['characterDetails', id], () => fetchCharacterDetails(id));
+    // Fetch character base details
+    const { data: character, isLoading: isCharacterLoading, error: characterError } = useQuery(
+        ['character', id],
+        ()=> fetchCharacterDetails(id)
+    );
 
-    const { filmsExist, starshipsExist } = useMemo(() => {
-        return data
-            ? {
-                  filmsExist: Boolean(data.films.length > 0),
-                  starshipsExist: Boolean(data?.starships.length > 0),
-              }
-            : {
-                  filmsExist: false,
-                  starshipsExist: false,
-              };
-    }, [data]);
+    // Fetch homeworld details
+    const { data: homeworld, isLoading: isHomeworldLoading } = useQuery(
+        ['homeworld', character?.homeworld],
+        () => fetchHomeWorldDetails(character),
+        {
+            enabled: !!character?.homeworld,
+        }
+    );
 
-    if (error) {
+    // Fetch films
+    const { data: films = [], isLoading: isFilmsLoading } = useQuery(
+        ['films', character?.films],
+        () => fetchCharacterFilms(character),
+        {
+            enabled: !!character?.films?.length,
+        }
+    );
+
+    // Fetch starships
+    const { data: starships = [], isLoading: isStarshipsLoading } = useQuery(
+        ['starships', character?.starships],
+        ()=>fetchStarshipDetails(character),
+        {
+            enabled: !!character?.starships?.length,
+        }
+    );
+
+    if (characterError) {
         return (
             <Box role="alert" aria-live="assertive" p={4} bg="red.50" borderRadius="md">
                 <Text color="red.500">{STRINGS['errofetchchardet']}</Text>
@@ -44,7 +52,7 @@ const CharacterDetails: React.FC = () => {
         );
     }
 
-    if (isLoading) {
+    if (isCharacterLoading) {
         return <Progress size="xs" isIndeterminate />;
     }
 
@@ -54,13 +62,13 @@ const CharacterDetails: React.FC = () => {
                 {/* Character Header */}
                 <Flex alignItems="center" justifyContent="space-between">
                     <Heading size="lg" color="teal.600">
-                        {data.name}
+                        {character.name}
                     </Heading>
                     <IconButton
-                        icon={favorites[data.name] ? <MdFavorite /> : <MdFavoriteBorder />}
-                        colorScheme={favorites[data.name] ? 'red' : 'gray'}
-                        aria-label={favorites[data.name] ? `Unfavorite ${data.name}` : `Favorite ${data.name}`}
-                        onClick={() => toggleFavorite(data)}
+                        icon={favorites[character.name] ? <MdFavorite /> : <MdFavoriteBorder />}
+                        colorScheme={favorites[character.name] ? 'red' : 'gray'}
+                        aria-label={favorites[character.name] ? `Unfavorite ${character.name}` : `Favorite ${character.name}`}
+                        onClick={() => toggleFavorite({...character, homeworld})}
                     />
                 </Flex>
 
@@ -73,16 +81,16 @@ const CharacterDetails: React.FC = () => {
                     </Heading>
                     <Stack spacing={1}>
                         <Text>
-                            <strong>{STRINGS['haircolor']}</strong>: {data.hair_color}
+                            <strong>{STRINGS['haircolor']}</strong>: {character.hair_color}
                         </Text>
                         <Text>
-                            <strong>{STRINGS['eyecolor']}</strong>: {data.eye_color}
+                            <strong>{STRINGS['eyecolor']}</strong>: {character.eye_color}
                         </Text>
                         <Text>
-                            <strong>{STRINGS['gender']}</strong>: {data.gender}
+                            <strong>{STRINGS['gender']}</strong>: {character.gender}
                         </Text>
                         <Text>
-                            <strong>{STRINGS['homeplanet']}</strong>: {data.homeworld}
+                            <strong>{STRINGS['homeplanet']}</strong>: {isHomeworldLoading ? "Loading..." : homeworld}
                         </Text>
                     </Stack>
                 </Box>
@@ -94,9 +102,11 @@ const CharacterDetails: React.FC = () => {
                     <Heading id="films-section" size="md" color="teal.500" mb={2}>
                         {STRINGS['films']}
                     </Heading>
-                    {filmsExist ? (
+                    {isFilmsLoading ? (
+                        <Text>Loading films...</Text>
+                    ) : films.length > 0 ? (
                         <UnorderedList>
-                            {data.films.map((film: string, index: number) => (
+                            {films.map((film, index) => (
                                 <ListItem key={index}>{film}</ListItem>
                             ))}
                         </UnorderedList>
@@ -114,9 +124,11 @@ const CharacterDetails: React.FC = () => {
                     <Heading id="starships-section" size="md" color="teal.500" mb={2}>
                         {STRINGS['starships']}
                     </Heading>
-                    {starshipsExist ? (
+                    {isStarshipsLoading ? (
+                        <Text>Loading starships...</Text>
+                    ) : starships.length > 0 ? (
                         <UnorderedList>
-                            {data.starships.map((ship: string, index: number) => (
+                            {starships.map((ship, index) => (
                                 <ListItem key={index}>{ship}</ListItem>
                             ))}
                         </UnorderedList>

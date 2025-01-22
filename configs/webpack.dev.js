@@ -77,7 +77,7 @@ const wplugins = [
     inDev() && new webpack.HotModuleReplacementPlugin(),
     inDev() && new ReactRefreshWebpackPlugin(),
     new HtmlWebpackPlugin({
-        template: '../../public/index.html',
+        template: 'public/index.html',
         inject: true,
     }),
     new MiniCssExtractPlugin({
@@ -95,7 +95,7 @@ module.exports = {
     output: {
         filename: '[name].js',
         chunkFilename: '[name].chunk.js',
-        publicPath: '/'
+        publicPath: ''
     },
     plugins: wplugins,
     resolve: {

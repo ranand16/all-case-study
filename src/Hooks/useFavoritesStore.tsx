@@ -1,6 +1,6 @@
+import { CharacterData } from '@src/Services/ApiUtility';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CharacterData } from '../Components/CharactersList';
 
 interface FavoritesState {
     favorites: Record<string, CharacterData>; // Stores characters by name
@@ -14,7 +14,6 @@ const useFavoritesStore = create<FavoritesState>()(
     persist(
         (set, get) => ({
             favorites: {},
-
             addFavorite: (character: CharacterData) =>
                 set((state) => ({
                     favorites: { ...state.favorites, [character.name]: character },
