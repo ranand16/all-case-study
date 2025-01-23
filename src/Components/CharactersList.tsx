@@ -63,7 +63,7 @@ const CharacterList: React.FC = () => {
     }
 );
 
-    const { next = null, previous = null, isFetching = true,  results = [] } = (finalRes || {}) as CharacterListApiResponse;
+    const { next = null, previous = null, count= 0, isFetching = true,  results = [] } = (finalRes || {}) as CharacterListApiResponse;
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.trim();
@@ -126,7 +126,7 @@ const CharacterList: React.FC = () => {
                         <Box>
                             <Heading size="md" color={`${colorScheme}.600`} mb={4} style={{display: "flex", justifyContent: "space-between"}}>
 
-                                {STRINGS["chardet"]}
+                                <Text>{STRINGS["chardet"]} {`(${count})`}</Text>
                                 <StackedToggleListGridView   
                                     isListView={isListView} 
                                     setIsListView={setIsListView} 

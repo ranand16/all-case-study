@@ -16,5 +16,3 @@ reactApp.render(
         </ChakraProvider>
     </QueryClientProvider>
 );
-
-
