@@ -1,10 +1,10 @@
 import { Button, Flex, Heading, SimpleGrid, Stack } from '@chakra-ui/react';
 import React, { useCallback } from 'react';
+import { CharacterCard } from '../Components/CharacterCard';
 import EmptyPage from '../Components/EmptyPage';
+import { CharacterData } from '../Helper/Interfaces';
 import useFavoritesStore from '../Hooks/useFavoritesStore';
 import { STRINGS } from '../lang/language';
-import { CharacterData } from '../Services/ApiUtility';
-import { CharacterCard } from './CharactersList';
 
 const Favourites: React.FC = () => {
     const { favorites, removeFavorite, resetFavorites } = useFavoritesStore();

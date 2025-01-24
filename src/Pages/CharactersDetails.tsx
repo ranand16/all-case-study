@@ -106,7 +106,7 @@ const CharacterDetails: React.FC = () => {
                         <Text>Loading films...</Text>
                     ) : films.length > 0 ? (
                         <UnorderedList>
-                            {films.map((film, index) => (
+                            {films.map((film: Array<string>, index) => (
                                 <ListItem key={index}>{film}</ListItem>
                             ))}
                         </UnorderedList>

@@ -2,9 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { CharacterData } from '../../src/Helper/Interfaces';
 import CharacterDetails from '../../src/Pages/CharactersDetails';
 import {
-  CharacterData,
   fetchCharacterDetails,
   fetchCharacterFilms,
   fetchHomeWorldDetails,

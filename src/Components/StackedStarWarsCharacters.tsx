@@ -1,4 +1,4 @@
-import { SimpleGrid, UnorderedList } from '@chakra-ui/react/dist/types';
+import { SimpleGrid, UnorderedList } from '@chakra-ui/react';
 import React from 'react';
 import { CharacterData, StackedStarWarsCharactersProps } from '../Helper/Interfaces';
 import { CharacterCard } from './CharacterCard';

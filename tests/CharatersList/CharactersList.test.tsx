@@ -3,8 +3,9 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { MemoryRouter } from 'react-router-dom';
+import { CharacterListApiResponse } from '../../src/Helper/Interfaces';
 import CharacterList from "../../src/Pages/CharactersList";
-import { CharacterListApiResponse, fetchCharacters } from '../../src/Services/ApiUtility';
+import { fetchCharacters } from '../../src/Services/ApiUtility';
 
 // Mock the fetchCharacters API
 jest.mock('../../src/Services/ApiUtility');

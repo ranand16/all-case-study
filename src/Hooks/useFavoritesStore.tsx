@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CharacterData } from '../Services/ApiUtility';
+import { CharacterData } from '../Helper/Interfaces';
 
 export interface FavoritesState {
     favorites: Record<string, CharacterData>; // Stores characters by name

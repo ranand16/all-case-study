@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { CharacterData } from '../../src/Helper/Interfaces';
 import Favourites from '../../src/Pages/FavoriteCharacters';
-import { CharacterData } from '../../src/Services/ApiUtility';
 const queryClient = new QueryClient();
 const renderFavComponent = () => {
     return render(

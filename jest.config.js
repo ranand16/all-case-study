@@ -9,7 +9,7 @@ module.exports = {
     transform: {
         '^.+\\.(ts|tsx|js|jsx)$': 'ts-jest', // Transform TypeScript and JavaScript files
     },
-    setupFilesAfterEnv: ['<rootDir>/setupTests.ts'], // Setup Testing Library
+    setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'], // Setup Testing Library
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'], // Extensions for modules
     collectCoverage: true,
     collectCoverageFrom: [

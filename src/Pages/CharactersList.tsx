@@ -9,7 +9,10 @@ import {
 import React, { useCallback, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useSearchParams } from 'react-router-dom';
-import { CharacterListApiResponse } from '../Helper/Interfaces';
+import { FlexPaginationButtons } from '../Components/FlexPaginationButtons';
+import { StackedStarWarsCharacters } from '../Components/StackedStarWarsCharacters';
+import { StackedToggleListGridView } from '../Components/StackedToggleListGridView';
+import { CharacterData, CharacterListApiResponse } from '../Helper/Interfaces';
 import useDebounce from '../Hooks/useDebounce';
 import useFavoritesStore from '../Hooks/useFavoritesStore';
 import usePrevious from '../Hooks/usePrevious';

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { SWAPI_BASE_URL } from "../Helper/constants";
+// eslint-disable-next-line import/no-unresolved
 import { CharacterData, CharacterListApiResponse } from "../Helper/Interfaces";
 
 // Cache for memoizing homeworld values (singleton)
