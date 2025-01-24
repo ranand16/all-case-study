@@ -2,6 +2,7 @@ Allica bank case study
 
 ## Steps to start project locally:
 
+- Install typescript in to your mcahine
 - `npm i`
 - `npm start`
 

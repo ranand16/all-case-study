@@ -55,13 +55,13 @@ export const fetchHomeWorlds = async (charactersArray: Array<CharacterData>) => 
 }
 
 export const fetchCharacterDetails = async (id: string): Promise<CharacterData> => {
-    // try {
+    try {
         const response = await axios.get(`${SWAPI_BASE_URL}/${id}/`);
         return response.data;
-    // } catch(e) {
-        // console.error("Error fetching character details:", e);
-        // throw new Error("Error fetching character details.");
-    // }
+    } catch(e) {
+        console.error("Error fetching character details:", e);
+        throw new Error("Error fetching character details.");
+    }
 }
 
 export const fetchHomeWorldDetails =  async (character: CharacterData) => {
