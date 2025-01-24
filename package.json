@@ -8,7 +8,8 @@
         "build": "cross-env NODE_ENV=production webpack --config configs/webpack.config.js",
         "serve": "cross-env NODE_ENV=production webpack --config configs/webpack.config.js && cross-env serve dist/",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
-        "test": "jest --watchAll=false"
+        "test:nocov": "jest --watchAll=false",
+        "test": "jest --coverage"
     },
     "author": "Rishabh Anand",
     "devDependencies": {

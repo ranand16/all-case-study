@@ -11,4 +11,11 @@ module.exports = {
     },
     setupFilesAfterEnv: ['<rootDir>/setupTests.ts'], // Setup Testing Library
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'], // Extensions for modules
+    collectCoverage: true,
+    collectCoverageFrom: [
+        "src/**/*.{js,jsx,ts,tsx}",  // Specify which files to collect coverage from
+        "!src/index.tsx",  // Exclude files if you don't want them
+        "!**/node_modules/**"
+    ],
+    coverageReporters: ['html', 'text'],
 };

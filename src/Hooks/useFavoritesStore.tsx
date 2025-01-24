@@ -1,8 +1,8 @@
-import { CharacterData } from '@src/Services/ApiUtility';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { CharacterData } from '../Services/ApiUtility';
 
-interface FavoritesState {
+export interface FavoritesState {
     favorites: Record<string, CharacterData>; // Stores characters by name
     addFavorite: (character: CharacterData) => void;
     removeFavorite: (name: string) => void;

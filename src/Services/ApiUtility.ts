@@ -1,25 +1,6 @@
 import axios from "axios";
 import { SWAPI_BASE_URL } from "../Helper/constants";
-
-export interface CharacterData {
-    name: string;
-    url: string;
-    eye_color: string;
-    hair_color: string;
-    gender: string;
-    homeworld: string;
-    films: Array<string>;
-    starships: Array<string>;
-    height: string;
-}
-
-export interface CharacterListApiResponse {
-    count: number;
-    next?: string | null;
-    previous?: string | null;
-    results: Array<CharacterData>;
-    isFetching: boolean;
-}
+import { CharacterData, CharacterListApiResponse } from "../Helper/Interfaces";
 
 // Cache for memoizing homeworld values (singleton)
 export const homeworldCache = (() => {
@@ -32,7 +13,7 @@ export const homeworldCache = (() => {
     };
 })();
 
-export const fetchCharacters = async (search: string, page: number): Promise<CharacterListApiResponse> => {
+export const fetchCharacters = async (search: string, page: number): Promise<CharacterListApiResponse | Error> => {
     try {
         // Fetch character data from SWAPI
         const response = await axios.get(
@@ -72,14 +53,19 @@ export const fetchHomeWorlds = async (charactersArray: Array<CharacterData>) => 
     return charactersArray;
 }
 
-export const fetchCharacterDetails = async (id: string) => {
-    const response = await axios.get(`${SWAPI_BASE_URL}/${id}/`);
-    return response.data;
+export const fetchCharacterDetails = async (id: string): Promise<CharacterData> => {
+    // try {
+        const response = await axios.get(`${SWAPI_BASE_URL}/${id}/`);
+        return response.data;
+    // } catch(e) {
+        // console.error("Error fetching character details:", e);
+        // throw new Error("Error fetching character details.");
+    // }
 }
 
 export const fetchHomeWorldDetails =  async (character: CharacterData) => {
     if (!character?.homeworld) return null;
-    const response = await axios.get(character.homeworld);
+    const response = await axios.get(character?.homeworld);
     return response.data.name;
 }
 

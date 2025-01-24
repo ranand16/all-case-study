@@ -19,10 +19,6 @@
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       },
       "alias": {
-        "map": [
-          ["@src", "./src"],
-          ["@assets", "./assets"]
-        ],
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     },

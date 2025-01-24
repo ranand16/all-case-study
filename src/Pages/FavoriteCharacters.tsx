@@ -1,23 +1,24 @@
 import { Button, Flex, Heading, SimpleGrid, Stack } from '@chakra-ui/react';
-import { STRINGS } from '@src/lang/language';
 import React, { useCallback } from 'react';
+import EmptyPage from '../Components/EmptyPage';
 import useFavoritesStore from '../Hooks/useFavoritesStore';
+import { STRINGS } from '../lang/language';
 import { CharacterData } from '../Services/ApiUtility';
 import { CharacterCard } from './CharactersList';
-import EmptyPage from './EmptyPage';
 
 const Favourites: React.FC = () => {
     const { favorites, removeFavorite, resetFavorites } = useFavoritesStore();
+    const favArray = React.useMemo(()=> { return Object.values(favorites) as Array<CharacterData> }, [favorites])
+    console.log("🚀 ~ favArray:", favArray)
     const handleRemoveFavorite = useCallback((character: CharacterData) => removeFavorite(character.name), [removeFavorite]);
     return (
         <main>
             <Stack direction={"column"} spacing={2}>
-
                 {/* HEADER */}
                 <Flex direction={"row"} justifyContent={"space-between"}>
                     <Heading size={"lg"} id="favorites-title">{STRINGS["favlist"]}</Heading>
                     {
-                        Object.values(favorites).length !== 0 && 
+                        favArray.length !== 0 && 
                         <Button
                             size={"xs"}
                             onClick={resetFavorites}
@@ -28,7 +29,7 @@ const Favourites: React.FC = () => {
                         </Button>
                     }
                 </Flex>
-                {Object.values(favorites).length === 0 ? (
+                {favArray.length === 0 ? (
                     <EmptyPage 
                         heading={STRINGS["nofavs"]}
                         message={STRINGS["datadoesnotexists"]}
@@ -38,7 +39,7 @@ const Favourites: React.FC = () => {
                 ) : (
                     <section aria-labelledby="favorites-title">
                         <SimpleGrid spacing={4} templateColumns='repeat(auto-fill, minmax(200px, 1fr))'>
-                            {Object.values(favorites).map((character) => (
+                            {favArray.map((character: CharacterData) => (
                                 <CharacterCard
                                     key={character.name}
                                     character={character}

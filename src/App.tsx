@@ -1,12 +1,12 @@
 import { Box, ButtonGroup, Container, Divider, Flex, Heading, Link, Progress, Spacer, Stack, Text } from '@chakra-ui/react';
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Link as ReactLink, Route, Routes } from 'react-router-dom';
-import CharacterDetails from './Components/CharactersDetails';
-import NotFound from './Components/NotFound';
 import { STRINGS } from './lang/language';
+import CharacterDetails from './Pages/CharactersDetails';
+import NotFound from './Pages/NotFound';
 
-const CharacterList = lazy(() => import('./Components/CharactersList'));
-const Favourites = lazy(() => import('./Components/FavoriteCharacters'));
+const CharacterList = lazy(() => import('./Pages/CharactersList'));
+const Favourites = lazy(() => import('./Pages/FavoriteCharacters'));
 
 const App: React.FC = () => {
     return (

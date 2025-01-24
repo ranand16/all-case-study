@@ -1,11 +1,11 @@
 import { Box, Divider, Flex, Heading, IconButton, ListItem, Progress, Stack, Text, UnorderedList } from "@chakra-ui/react";
-import useFavoritesStore from "@src/Hooks/useFavoritesStore";
-import { STRINGS } from "@src/lang/language";
-import { fetchCharacterDetails, fetchCharacterFilms, fetchHomeWorldDetails, fetchStarshipDetails } from "@src/Services/ApiUtility";
 import React from "react";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import { useQuery } from "react-query";
 import { useParams } from "react-router";
+import useFavoritesStore from "../Hooks/useFavoritesStore";
+import { STRINGS } from "../lang/language";
+import { fetchCharacterDetails, fetchCharacterFilms, fetchHomeWorldDetails, fetchStarshipDetails } from "../Services/ApiUtility";
 
 const CharacterDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -62,12 +62,12 @@ const CharacterDetails: React.FC = () => {
                 {/* Character Header */}
                 <Flex alignItems="center" justifyContent="space-between">
                     <Heading size="lg" color="teal.600">
-                        {character.name}
+                        {character?.name}
                     </Heading>
                     <IconButton
-                        icon={favorites[character.name] ? <MdFavorite /> : <MdFavoriteBorder />}
-                        colorScheme={favorites[character.name] ? 'red' : 'gray'}
-                        aria-label={favorites[character.name] ? `Unfavorite ${character.name}` : `Favorite ${character.name}`}
+                        icon={favorites[character?.name] ? <MdFavorite /> : <MdFavoriteBorder />}
+                        colorScheme={favorites[character?.name] ? 'red' : 'gray'}
+                        aria-label={favorites[character?.name] ? `Unfavorite ${character?.name}` : `Favorite ${character?.name}`}
                         onClick={() => toggleFavorite({...character, homeworld})}
                     />
                 </Flex>
@@ -81,13 +81,13 @@ const CharacterDetails: React.FC = () => {
                     </Heading>
                     <Stack spacing={1}>
                         <Text>
-                            <strong>{STRINGS['haircolor']}</strong>: {character.hair_color}
+                            <strong>{STRINGS['haircolor']}</strong>: {character?.hair_color}
                         </Text>
                         <Text>
-                            <strong>{STRINGS['eyecolor']}</strong>: {character.eye_color}
+                            <strong>{STRINGS['eyecolor']}</strong>: {character?.eye_color}
                         </Text>
                         <Text>
-                            <strong>{STRINGS['gender']}</strong>: {character.gender}
+                            <strong>{STRINGS['gender']}</strong>: {character?.gender}
                         </Text>
                         <Text>
                             <strong>{STRINGS['homeplanet']}</strong>: {isHomeworldLoading ? "Loading..." : homeworld}

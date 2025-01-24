@@ -1,6 +1,6 @@
-import { STRINGS } from '@src/lang/language';
 import React from 'react';
-import EmptyPage from './EmptyPage';
+import EmptyPage from '../Components/EmptyPage';
+import { STRINGS } from '../lang/language';
 
 const NotFound: React.FC = () => {
     return (

@@ -3,21 +3,6 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const path = require('path');
-const cwd = process.cwd();
-
-function createWebpackAliases (aliases) {
-    const result = {};
-    for (const name in aliases) {
-        result[name] = path.join(cwd, aliases[name]);
-    }
-    return result;
-}
-
-const aliases = createWebpackAliases({
-    '@assets': 'assets',
-    '@src': 'src',
-});
 
 function inDev() {
     return process.env.NODE_ENV == 'development';
@@ -100,7 +85,7 @@ module.exports = {
     plugins: wplugins,
     resolve: {
         extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
-        alias: aliases,
+        // alias: aliases,
     },
     stats: 'errors-warnings',
     devtool: 'cheap-module-source-map',

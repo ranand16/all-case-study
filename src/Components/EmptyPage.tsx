@@ -35,8 +35,8 @@ const EmptyPage: React.FC<EmptyPageProps> = ({
                     display="inline-block"
                     as="h2"
                     size="2xl"
-                    bgGradient="linear(to-r, teal.400, teal.600)"
                     backgroundClip="text"
+                    color={"teal"}
                 >
                     {heading}
                 </Heading>
